@@ -16,7 +16,7 @@ public class UserEntity implements Serializable {
     private String firstName;
     @Column(nullable = false,length = 50)
     private String lastName;
-    @Column(nullable = false,length = 100)
+    @Column(unique = true,length = 100,nullable = false)
     private String emailAddress;
     @Column(nullable = false)
     private String encryptedPassword;
@@ -87,4 +87,5 @@ public class UserEntity implements Serializable {
     public void setEmailVerificationStatus(Boolean emailVerificationStatus) {
         this.emailVerificationStatus = emailVerificationStatus;
     }
+
 }
