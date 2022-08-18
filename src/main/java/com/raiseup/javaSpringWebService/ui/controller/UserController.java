@@ -1,6 +1,6 @@
 package com.raiseup.javaSpringWebService.ui.controller;
 
-import com.raiseup.javaSpringWebService.repository.service.UserDtoService;
+import com.raiseup.javaSpringWebService.data.service.UserService;
 import com.raiseup.javaSpringWebService.ui.model.request.UserDetailsRequestModel;
 import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
 import org.apache.catalina.User;
@@ -13,11 +13,12 @@ import java.util.List;
 @RestController
 @RequestMapping("users")
 public class UserController {
-    private final UserDtoService userDtoService;
+    private final UserService userService;
 
-    public UserController(UserDtoService userDtoService) {
-        this.userDtoService = userDtoService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
+
 
     @GetMapping
     public ResponseEntity<List<User>>getUsers(){
@@ -31,8 +32,9 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse>saveUser(@RequestBody UserDetailsRequestModel userDetails){
-        UserResponse returnValue= userDtoService.save(userDetails);
-        return new ResponseEntity<>(returnValue, HttpStatus.ACCEPTED);
+        UserResponse response=userService.save(userDetails);
+
+        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     @PutMapping

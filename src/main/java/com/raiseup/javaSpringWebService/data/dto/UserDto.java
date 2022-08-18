@@ -1,28 +1,25 @@
-package com.raiseup.javaSpringWebService.io.entity;
+package com.raiseup.javaSpringWebService.data.dto;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "users")
-public class UserEntity implements Serializable {
+
+public class UserDto implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
     private String userId;
-    @Column(nullable = false,length = 50)
     private String firstName;
-    @Column(nullable = false,length = 50)
     private String lastName;
-    @Column(nullable = false,length = 100)
     private String emailAddress;
-    @Column(nullable = false)
+    private String password;
     private String encryptedPassword;
-    private String emailVerificationToken;
-    @Column(nullable = false)
-    private boolean emailVerificationStatus=false;
+    private String emailValidationToken;
+    private Boolean emailVerificationStatus=false;
+
 
     public Long getId() {
         return id;
@@ -64,6 +61,14 @@ public class UserEntity implements Serializable {
         this.emailAddress = emailAddress;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getEncryptedPassword() {
         return encryptedPassword;
     }
@@ -72,12 +77,12 @@ public class UserEntity implements Serializable {
         this.encryptedPassword = encryptedPassword;
     }
 
-    public String getEmailVerificationToken() {
-        return emailVerificationToken;
+    public String getEmailValidationToken() {
+        return emailValidationToken;
     }
 
-    public void setEmailVerificationToken(String emailVerificationToken) {
-        this.emailVerificationToken = emailVerificationToken;
+    public void setEmailValidationToken(String emailValidationToken) {
+        this.emailValidationToken = emailValidationToken;
     }
 
     public Boolean getEmailVerificationStatus() {
