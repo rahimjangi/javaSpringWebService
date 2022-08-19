@@ -9,10 +9,14 @@ import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
 import com.raiseup.javaSpringWebService.utils.UtilityHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @Profile("jpa")
@@ -52,7 +56,22 @@ public class UserServiceDataJPA implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserDto getUser(String emailAddress) {
+        Optional<UserEntity> optionalUserEntity= userRepository.findByEmailAddress(emailAddress);
+        UserEntity userEntity= new UserEntity();
+        UserDto userDto= new UserDto();
+        if(optionalUserEntity.isPresent()){
+            userEntity= optionalUserEntity.get();
+        }
+        BeanUtils.copyProperties(userEntity,userDto);
+        return userDto;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String emailAddress) throws UsernameNotFoundException {
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(emailAddress);
+        if(optionalUserEntity.isEmpty()) throw new UsernameNotFoundException("User does not exist!");
+        UserEntity userEntity=optionalUserEntity.get();
+        return new User(userEntity.getEmailAddress(), userEntity.getEncryptedPassword(), new ArrayList<>());
     }
 }

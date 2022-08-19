@@ -2,14 +2,13 @@ package com.raiseup.javaSpringWebService.security;
 
 import com.raiseup.javaSpringWebService.data.service.UserService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
+//@Configuration
 public class WebSecurity {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -24,15 +23,22 @@ public class WebSecurity {
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
-
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
+
+
 
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/users")
+                .antMatchers(HttpMethod.POST,SecurityConstants.SIGN_UP_URL)
                 .permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and();
+//        .addFilter(new AuthenticationFilter(this.filterChain());
         return http.build();
     }
+
+
+
+
 }
