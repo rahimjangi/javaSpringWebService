@@ -3,7 +3,6 @@ package com.raiseup.javaSpringWebService.ui.controller;
 import com.raiseup.javaSpringWebService.data.service.UserService;
 import com.raiseup.javaSpringWebService.ui.model.request.UserDetailsRequestModel;
 import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
-import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,16 +32,17 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponse>saveUser(@RequestBody UserDetailsRequestModel userDetails){
         UserResponse response=userService.save(userDetails);
-
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody User user){
-        return null;
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserDetailsRequestModel user){
+        UserResponse userResponse = userService.updateUser(user);
+        return new ResponseEntity<>(userResponse,HttpStatus.OK);
     }
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Long> deleteUser(){
-        return null;
+    public ResponseEntity<Long> deleteUser(@PathVariable(name = "userId") String userId){
+        userService.deleteUser(userId);
+        return new ResponseEntity<>(null,HttpStatus.ACCEPTED);
     }
 }

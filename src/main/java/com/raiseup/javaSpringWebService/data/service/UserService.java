@@ -13,7 +13,9 @@ public interface  UserService extends UserDetailsService {
 
     UserResponse save(UserDetailsRequestModel userDetails);
     UserDto getUser(String emailAddress);
+    UserResponse getUser(UserDetailsRequestModel user);
     UserResponse findByUserId(String userId);
     List<UserResponse>getUsers();
-
+    UserResponse updateUser(UserDetailsRequestModel user);
+    void deleteUser(String userId);
 }

@@ -69,6 +69,17 @@ public class UserServiceDataJPA implements UserService {
     }
 
     @Override
+    public UserResponse getUser(UserDetailsRequestModel user) {
+        UserEntity userEntity= new UserEntity();
+        UserResponse userResponse= new UserResponse();
+        BeanUtils.copyProperties(user,userEntity);
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(userEntity.getEmailAddress());
+        assert optionalUserEntity.orElse(null) != null;
+        BeanUtils.copyProperties(userResponse,optionalUserEntity.orElse(null));
+        return userResponse;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String emailAddress) throws UsernameNotFoundException {
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(emailAddress);
         if(optionalUserEntity.isEmpty()) throw new UsernameNotFoundException("User does not exist!");
@@ -97,5 +108,27 @@ public class UserServiceDataJPA implements UserService {
             userResponses.add(userResponse);
         });
         return userResponses;
+    }
+
+    @Override
+    public UserResponse updateUser(UserDetailsRequestModel user) {
+        UserResponse userResponse= new UserResponse();
+        UserEntity userEntity= new UserEntity();
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(user.getEmailAddress());
+        if(optionalUserEntity.isPresent()){
+            userEntity=optionalUserEntity.get();
+            userEntity.setFirstName(user.getFirstName());
+            userEntity.setLastName(user.getLastName());
+            UserEntity savedUserEntity = userRepository.save(userEntity);
+            BeanUtils.copyProperties(savedUserEntity,userResponse);
+            return userResponse;
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+        Optional<UserEntity> userEntity = userRepository.findByUserId(userId);
+        userEntity.ifPresent(userRepository::delete);
     }
 }
