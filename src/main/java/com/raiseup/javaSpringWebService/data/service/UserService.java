@@ -6,10 +6,14 @@ import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface  UserService extends UserDetailsService {
 
     UserResponse save(UserDetailsRequestModel userDetails);
     UserDto getUser(String emailAddress);
+    UserResponse findByUserId(String userId);
+    List<UserResponse>getUsers();
 
 }

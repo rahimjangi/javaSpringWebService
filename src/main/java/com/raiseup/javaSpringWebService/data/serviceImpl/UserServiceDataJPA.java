@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -73,5 +74,28 @@ public class UserServiceDataJPA implements UserService {
         if(optionalUserEntity.isEmpty()) throw new UsernameNotFoundException("User does not exist!");
         UserEntity userEntity=optionalUserEntity.get();
         return new User(userEntity.getEmailAddress(), userEntity.getEncryptedPassword(), new ArrayList<>());
+    }
+    @Override
+    public UserResponse findByUserId(String userId){
+        UserEntity userEntity= new UserEntity();
+        UserResponse userResponse= new UserResponse();
+        Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+        if (optionalUser.isPresent()){
+            userEntity = optionalUser.get();
+            BeanUtils.copyProperties(userEntity,userResponse);
+            return userResponse;
+        }
+        return null;
+    }
+
+    @Override
+    public List<UserResponse> getUsers() {
+        UserResponse userResponse= new UserResponse();
+        List<UserResponse> userResponses= new ArrayList<>();
+        userRepository.findAll().forEach(item->{
+            BeanUtils.copyProperties(item,userResponse);
+            userResponses.add(userResponse);
+        });
+        return userResponses;
     }
 }
