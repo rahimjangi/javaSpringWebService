@@ -9,6 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @SpringBootApplication
 public class JavaSpringWebServiceApplication {
 
+
+
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(JavaSpringWebServiceApplication.class, args);
 
