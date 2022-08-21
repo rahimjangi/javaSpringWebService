@@ -2,6 +2,8 @@ package com.raiseup.javaSpringWebService.data.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +25,9 @@ public class UserEntity implements Serializable {
     private String emailVerificationToken;
     @Column(nullable = false)
     private boolean emailVerificationStatus=false;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "userDetails")
+    private List<AddressEntity>addresses= new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -88,4 +93,19 @@ public class UserEntity implements Serializable {
         this.emailVerificationStatus = emailVerificationStatus;
     }
 
+    public boolean isEmailVerificationStatus() {
+        return emailVerificationStatus;
+    }
+
+    public void setEmailVerificationStatus(boolean emailVerificationStatus) {
+        this.emailVerificationStatus = emailVerificationStatus;
+    }
+
+    public List<AddressEntity> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressEntity> addresses) {
+        this.addresses = addresses;
+    }
 }
