@@ -9,6 +9,9 @@ import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
 import com.raiseup.javaSpringWebService.utils.UtilityHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +28,10 @@ public class UserServiceDataJPA implements UserService {
     private final UserRepository userRepository;
     private final UtilityHelper helper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private UserEntity userEntity= new UserEntity();
+    private UserResponse userResponse= new UserResponse();
+    private UserDto userDto= new UserDto();
+
 
     public UserServiceDataJPA(UserRepository userRepository, UtilityHelper helper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
@@ -34,15 +41,11 @@ public class UserServiceDataJPA implements UserService {
 
     @Override
     public UserResponse save(UserDetailsRequestModel userDetails) {
-        if(userRepository.findByEmailAddress(userDetails.getEmailAddress()).isPresent()) try {
+        if (userRepository.findByEmailAddress(userDetails.getEmailAddress()).isPresent()) try {
             throw new Exception("Email is taken!");
         } catch (Exception e) {
 
         }
-
-        UserDto userDto = new UserDto();
-        UserResponse userResponse= new UserResponse();
-        UserEntity userEntity = new UserEntity();
 
         BeanUtils.copyProperties(userDetails, userDto);
         userDto.setUserId(helper.generateUserId(50));
@@ -50,52 +53,82 @@ public class UserServiceDataJPA implements UserService {
         userDto.setEmailValidationToken("kjahskjcf");
         userDto.setEmailVerificationStatus(false);
         BeanUtils.copyProperties(userDto, userEntity);
-        userEntity=userRepository.save(userEntity);
-        BeanUtils.copyProperties(userEntity,userResponse);
-
+        UserEntity savedUserEntity = userRepository.save(userEntity);
+        BeanUtils.copyProperties(savedUserEntity, userResponse);
         return userResponse;
     }
 
     @Override
     public UserDto getUser(String emailAddress) {
-        Optional<UserEntity> optionalUserEntity= userRepository.findByEmailAddress(emailAddress);
-        UserEntity userEntity= new UserEntity();
-        UserDto userDto= new UserDto();
-        if(optionalUserEntity.isPresent()){
-            userEntity= optionalUserEntity.get();
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(emailAddress);
+        if (optionalUserEntity.isPresent()) {
+            userEntity = optionalUserEntity.get();
         }
-        BeanUtils.copyProperties(userEntity,userDto);
+        BeanUtils.copyProperties(userEntity, userDto);
         return userDto;
+    }
+
+    @Override
+    public UserResponse getUser(UserDetailsRequestModel user) {
+        BeanUtils.copyProperties(user, userEntity);
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(userEntity.getEmailAddress());
+        assert optionalUserEntity.orElse(null) != null;
+        BeanUtils.copyProperties(userResponse, optionalUserEntity.orElse(null));
+        return userResponse;
     }
 
     @Override
     public UserDetails loadUserByUsername(String emailAddress) throws UsernameNotFoundException {
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(emailAddress);
-        if(optionalUserEntity.isEmpty()) throw new UsernameNotFoundException("User does not exist!");
-        UserEntity userEntity=optionalUserEntity.get();
+        if (optionalUserEntity.isEmpty()) throw new UsernameNotFoundException("User does not exist!");
+        UserEntity userEntity = optionalUserEntity.get();
         return new User(userEntity.getEmailAddress(), userEntity.getEncryptedPassword(), new ArrayList<>());
     }
+
     @Override
-    public UserResponse findByUserId(String userId){
-        UserEntity userEntity= new UserEntity();
-        UserResponse userResponse= new UserResponse();
+    public UserResponse findByUserId(String userId) {
         Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
-        if (optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             userEntity = optionalUser.get();
-            BeanUtils.copyProperties(userEntity,userResponse);
+            BeanUtils.copyProperties(userEntity, userResponse);
             return userResponse;
         }
         return null;
     }
 
     @Override
-    public List<UserResponse> getUsers() {
-        UserResponse userResponse= new UserResponse();
-        List<UserResponse> userResponses= new ArrayList<>();
-        userRepository.findAll().forEach(item->{
-            BeanUtils.copyProperties(item,userResponse);
+    public List<UserResponse> getUsers(int page,int limit) {
+        List<UserResponse> userResponses = new ArrayList<>();
+        if(page>0) page-=1;
+        Pageable pageRequest= PageRequest.of(page, limit);
+        Page<UserEntity> userEntityPage = userRepository.findAll(pageRequest);
+        List<UserEntity> content = userEntityPage.getContent();
+        content.forEach(item -> {
+            UserResponse userResponse= new UserResponse();
+            BeanUtils.copyProperties(item, userResponse);
             userResponses.add(userResponse);
+            System.out.println(userResponse.getEmailAddress());
         });
         return userResponses;
+    }
+
+    @Override
+    public UserResponse updateUser(UserDetailsRequestModel user) {
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(user.getEmailAddress());
+        if (optionalUserEntity.isPresent()) {
+            userEntity = optionalUserEntity.get();
+            userEntity.setFirstName(user.getFirstName());
+            userEntity.setLastName(user.getLastName());
+            UserEntity savedUserEntity = userRepository.save(userEntity);
+            BeanUtils.copyProperties(savedUserEntity, userResponse);
+            return userResponse;
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+        Optional<UserEntity> userEntity = userRepository.findByUserId(userId);
+        userEntity.ifPresent(userRepository::delete);
     }
 }
