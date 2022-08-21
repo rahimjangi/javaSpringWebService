@@ -1,12 +1,17 @@
 package com.raiseup.javaSpringWebService.ui.model.request;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserDetailsRequestModel {
 
     private String firstName;
     private String lastName;
     private String emailAddress;
     private String password;
+
+    private List<AddressRequestModel> addresses= new ArrayList<>();
 
     public String getFirstName() {
         return firstName;
@@ -34,6 +39,14 @@ public class UserDetailsRequestModel {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<AddressRequestModel> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressRequestModel> addresses) {
+        this.addresses = addresses;
     }
 
     @Override
