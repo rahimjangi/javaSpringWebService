@@ -9,6 +9,7 @@ import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
 import com.raiseup.javaSpringWebService.utils.UtilityHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
@@ -97,11 +98,16 @@ public class UserServiceDataJPA implements UserService {
 
     @Override
     public List<UserResponse> getUsers(int page,int limit) {
-        Pageable pageRequest= PageRequest.of(page, limit);
         List<UserResponse> userResponses = new ArrayList<>();
-        userRepository.findAll(pageRequest).forEach(item -> {
+        if(page>0) page-=1;
+        Pageable pageRequest= PageRequest.of(page, limit);
+        Page<UserEntity> userEntityPage = userRepository.findAll(pageRequest);
+        List<UserEntity> content = userEntityPage.getContent();
+        content.forEach(item -> {
+            UserResponse userResponse= new UserResponse();
             BeanUtils.copyProperties(item, userResponse);
             userResponses.add(userResponse);
+            System.out.println(userResponse.getEmailAddress());
         });
         return userResponses;
     }
