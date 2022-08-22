@@ -1,5 +1,6 @@
 package com.raiseup.javaSpringWebService.data.serviceImpl;
 
+import com.raiseup.javaSpringWebService.data.dto.AddressDto;
 import com.raiseup.javaSpringWebService.data.dto.UserDto;
 import com.raiseup.javaSpringWebService.data.entity.AddressEntity;
 import com.raiseup.javaSpringWebService.data.entity.UserEntity;
@@ -57,13 +58,6 @@ public class UserServiceDataJPA implements UserService {
         userDto.setEmailValidationToken("kjahskjcf");
         userDto.setEmailVerificationStatus(false);
 
-//        for(int i=0;i<userDto.getAddresses().size();i++){
-//            AddressDto addressDto = userDto.getAddresses().get(i);
-//            addressDto.setUserDetails(userDto);
-//            addressDto.setAddress_id(helper.generateAddressId(30));
-//            userDto.getAddresses().set(i,addressDto);
-//        }
-
         modelMapper.map(userDto, userEntity);
 
        for(int i=0;i<userEntity.getAddresses().size();i++){
@@ -80,9 +74,12 @@ public class UserServiceDataJPA implements UserService {
     @Override
     public UserDto getUser(String emailAddress) {
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(emailAddress);
-        if (optionalUserEntity.isPresent()) {
-            userEntity = optionalUserEntity.get();
+        if (optionalUserEntity.isEmpty()) {
+            throw  new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
+        ModelMapper modelMapper= new ModelMapper();
+        UserEntity userEntity= optionalUserEntity.get();
+        UserDto userDto= new UserDto();
         modelMapper.map(userEntity, userDto);
         return userDto;
     }
@@ -129,6 +126,25 @@ public class UserServiceDataJPA implements UserService {
             System.out.println(userResponse.getEmailAddress());
         });
         return userResponses;
+    }
+
+    @Override
+    public List<AddressDto> getUserAddresses(String userId) {
+        ModelMapper modelMapper= new ModelMapper();
+        Optional<UserEntity> optionalUserEntity = userRepository.findByUserId(userId);
+        if(optionalUserEntity.isEmpty()){
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+        UserEntity userEntity = optionalUserEntity.get();
+        List<AddressEntity> userEntityAddresses = userEntity.getAddresses();
+        List<AddressDto> addressDtos= new ArrayList<>();
+        userEntityAddresses.forEach(addressEntity -> {
+            AddressDto addressDto= new AddressDto();
+            modelMapper.map(addressEntity,addressDto);
+            addressDtos.add(addressDto);
+        });
+
+        return addressDtos;
     }
 
     @Override

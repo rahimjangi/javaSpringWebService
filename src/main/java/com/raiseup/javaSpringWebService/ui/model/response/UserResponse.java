@@ -1,11 +1,14 @@
 package com.raiseup.javaSpringWebService.ui.model.response;
 
 
+import java.util.List;
+
 public class UserResponse {
     private String userId;
     private String firstName;
     private String lastName;
     private String emailAddress;
+    private List<AddressResponse>addresses;
 
     public String getUserId() {
         return userId;
@@ -37,5 +40,13 @@ public class UserResponse {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public List<AddressResponse> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressResponse> addresses) {
+        this.addresses = addresses;
     }
 }

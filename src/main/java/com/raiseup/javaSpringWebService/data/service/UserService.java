@@ -1,5 +1,6 @@
 package com.raiseup.javaSpringWebService.data.service;
 
+import com.raiseup.javaSpringWebService.data.dto.AddressDto;
 import com.raiseup.javaSpringWebService.data.dto.UserDto;
 import com.raiseup.javaSpringWebService.ui.model.request.UserDetailsRequestModel;
 import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
@@ -18,4 +19,6 @@ public interface  UserService extends UserDetailsService {
     UserResponse updateUser(UserDetailsRequestModel user);
     void deleteUser(String userId);
     List<UserResponse> getUsers(int page, int limit);
+
+    List<AddressDto> getUserAddresses(String userId);
 }
