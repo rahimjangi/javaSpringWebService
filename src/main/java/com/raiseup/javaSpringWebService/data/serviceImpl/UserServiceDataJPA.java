@@ -1,13 +1,16 @@
 package com.raiseup.javaSpringWebService.data.serviceImpl;
 
 import com.raiseup.javaSpringWebService.data.dto.UserDto;
+import com.raiseup.javaSpringWebService.data.entity.AddressEntity;
 import com.raiseup.javaSpringWebService.data.entity.UserEntity;
 import com.raiseup.javaSpringWebService.data.repository.UserRepository;
 import com.raiseup.javaSpringWebService.data.service.UserService;
+import com.raiseup.javaSpringWebService.exception.ErrorMessages;
+import com.raiseup.javaSpringWebService.exception.UserServiceException;
 import com.raiseup.javaSpringWebService.ui.model.request.UserDetailsRequestModel;
 import com.raiseup.javaSpringWebService.ui.model.response.UserResponse;
 import com.raiseup.javaSpringWebService.utils.UtilityHelper;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +34,7 @@ public class UserServiceDataJPA implements UserService {
     private UserEntity userEntity= new UserEntity();
     private UserResponse userResponse= new UserResponse();
     private UserDto userDto= new UserDto();
+    ModelMapper modelMapper= new ModelMapper();
 
 
     public UserServiceDataJPA(UserRepository userRepository, UtilityHelper helper, BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -42,19 +46,34 @@ public class UserServiceDataJPA implements UserService {
     @Override
     public UserResponse save(UserDetailsRequestModel userDetails) {
         if (userRepository.findByEmailAddress(userDetails.getEmailAddress()).isPresent()) try {
-            throw new Exception("Email is taken!");
+            throw new UserServiceException(ErrorMessages.EMAIL_ADDRESS_NOT_VERIFIED.getErrorMessage());
         } catch (Exception e) {
 
         }
 
-        BeanUtils.copyProperties(userDetails, userDto);
+        modelMapper.map(userDetails,userDto);
         userDto.setUserId(helper.generateUserId(50));
         userDto.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         userDto.setEmailValidationToken("kjahskjcf");
         userDto.setEmailVerificationStatus(false);
-        BeanUtils.copyProperties(userDto, userEntity);
+
+//        for(int i=0;i<userDto.getAddresses().size();i++){
+//            AddressDto addressDto = userDto.getAddresses().get(i);
+//            addressDto.setUserDetails(userDto);
+//            addressDto.setAddress_id(helper.generateAddressId(30));
+//            userDto.getAddresses().set(i,addressDto);
+//        }
+
+        modelMapper.map(userDto, userEntity);
+
+       for(int i=0;i<userEntity.getAddresses().size();i++){
+           AddressEntity addressEntity = userEntity.getAddresses().get(i);
+           addressEntity.setUserDetails(userEntity);
+           addressEntity.setAddress_id(helper.generateAddressId(30));
+           userEntity.getAddresses().set(i,addressEntity);
+        }
         UserEntity savedUserEntity = userRepository.save(userEntity);
-        BeanUtils.copyProperties(savedUserEntity, userResponse);
+        modelMapper.map(savedUserEntity, userResponse);
         return userResponse;
     }
 
@@ -64,16 +83,16 @@ public class UserServiceDataJPA implements UserService {
         if (optionalUserEntity.isPresent()) {
             userEntity = optionalUserEntity.get();
         }
-        BeanUtils.copyProperties(userEntity, userDto);
+        modelMapper.map(userEntity, userDto);
         return userDto;
     }
 
     @Override
     public UserResponse getUser(UserDetailsRequestModel user) {
-        BeanUtils.copyProperties(user, userEntity);
+        modelMapper.map(user, userEntity);
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmailAddress(userEntity.getEmailAddress());
         assert optionalUserEntity.orElse(null) != null;
-        BeanUtils.copyProperties(userResponse, optionalUserEntity.orElse(null));
+        modelMapper.map(userResponse, optionalUserEntity.orElse(null));
         return userResponse;
     }
 
@@ -90,7 +109,7 @@ public class UserServiceDataJPA implements UserService {
         Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
         if (optionalUser.isPresent()) {
             userEntity = optionalUser.get();
-            BeanUtils.copyProperties(userEntity, userResponse);
+            modelMapper.map(userEntity, userResponse);
             return userResponse;
         }
         return null;
@@ -105,7 +124,7 @@ public class UserServiceDataJPA implements UserService {
         List<UserEntity> content = userEntityPage.getContent();
         content.forEach(item -> {
             UserResponse userResponse= new UserResponse();
-            BeanUtils.copyProperties(item, userResponse);
+            modelMapper.map(item, userResponse);
             userResponses.add(userResponse);
             System.out.println(userResponse.getEmailAddress());
         });
@@ -120,7 +139,7 @@ public class UserServiceDataJPA implements UserService {
             userEntity.setFirstName(user.getFirstName());
             userEntity.setLastName(user.getLastName());
             UserEntity savedUserEntity = userRepository.save(userEntity);
-            BeanUtils.copyProperties(savedUserEntity, userResponse);
+            modelMapper.map(savedUserEntity, userResponse);
             return userResponse;
         }
         return null;
