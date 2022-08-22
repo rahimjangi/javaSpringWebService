@@ -2,7 +2,6 @@ package com.raiseup.javaSpringWebService.data.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,8 +25,8 @@ public class UserEntity implements Serializable {
     @Column(nullable = false)
     private boolean emailVerificationStatus=false;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "userDetails")
-    private List<AddressEntity>addresses= new ArrayList<>();
+    @OneToMany(mappedBy="userDetails", cascade=CascadeType.ALL)
+    private List<AddressEntity>addresses;
 
     public Long getId() {
         return id;

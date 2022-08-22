@@ -6,6 +6,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "addresses")
 public class AddressEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +24,7 @@ public class AddressEntity implements Serializable {
     @Column(nullable = false,length = 15)
     private String type;
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name="users_id")
     private UserEntity userDetails;
 
     public Long getId() {
