@@ -1,6 +1,7 @@
 package com.raiseup.javaSpringWebService.ui.controller;
 
 import com.raiseup.javaSpringWebService.data.dto.AddressDto;
+import com.raiseup.javaSpringWebService.data.service.AddressService;
 import com.raiseup.javaSpringWebService.data.service.UserService;
 import com.raiseup.javaSpringWebService.exception.ErrorMessages;
 import com.raiseup.javaSpringWebService.exception.UserServiceException;
@@ -23,9 +24,11 @@ import java.util.List;
         )
 public class UserController {
     private final UserService userService;
+    private final AddressService addressService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AddressService addressService) {
         this.userService = userService;
+        this.addressService = addressService;
     }
 
 
@@ -63,7 +66,7 @@ public class UserController {
 
     @GetMapping("{userId}/addresses")
     public ResponseEntity<List<AddressResponse>>getUserAddresses(@PathVariable("userId")String userId){
-        List<AddressDto> addressDtos=userService.getUserAddresses(userId);
+        List<AddressDto> addressDtos=addressService.getUserAddresses(userId);
         List<AddressResponse>responses= new ArrayList<>();
         ModelMapper modelMapper= new ModelMapper();
         addressDtos.forEach(addressDto -> {

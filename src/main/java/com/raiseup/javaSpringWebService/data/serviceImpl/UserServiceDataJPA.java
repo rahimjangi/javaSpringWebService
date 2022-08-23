@@ -1,6 +1,5 @@
 package com.raiseup.javaSpringWebService.data.serviceImpl;
 
-import com.raiseup.javaSpringWebService.data.dto.AddressDto;
 import com.raiseup.javaSpringWebService.data.dto.UserDto;
 import com.raiseup.javaSpringWebService.data.entity.AddressEntity;
 import com.raiseup.javaSpringWebService.data.entity.UserEntity;
@@ -128,24 +127,6 @@ public class UserServiceDataJPA implements UserService {
         return userResponses;
     }
 
-    @Override
-    public List<AddressDto> getUserAddresses(String userId) {
-        ModelMapper modelMapper= new ModelMapper();
-        Optional<UserEntity> optionalUserEntity = userRepository.findByUserId(userId);
-        if(optionalUserEntity.isEmpty()){
-            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-        }
-        UserEntity userEntity = optionalUserEntity.get();
-        List<AddressEntity> userEntityAddresses = userEntity.getAddresses();
-        List<AddressDto> addressDtos= new ArrayList<>();
-        userEntityAddresses.forEach(addressEntity -> {
-            AddressDto addressDto= new AddressDto();
-            modelMapper.map(addressEntity,addressDto);
-            addressDtos.add(addressDto);
-        });
-
-        return addressDtos;
-    }
 
     @Override
     public UserResponse updateUser(UserDetailsRequestModel user) {
