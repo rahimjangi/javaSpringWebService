@@ -12,7 +12,7 @@ public class AddressEntity implements Serializable {
     private Long id;
 
     @Column(length = 50, nullable = false)
-    private String address_id;
+    private String addressId;
     @Column(length = 50,nullable = false)
     private String country;
     @Column(length = 50,nullable = false)
@@ -35,20 +35,12 @@ public class AddressEntity implements Serializable {
         this.id = id;
     }
 
-    public String getAddress_id() {
-        return address_id;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddress_id(String address_id) {
-        this.address_id = address_id;
-    }
-
-    public UserEntity getUserDetails() {
-        return userDetails;
-    }
-
-    public void setUserDetails(UserEntity userDetails) {
-        this.userDetails = userDetails;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public String getCountry() {
@@ -89,5 +81,13 @@ public class AddressEntity implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public UserEntity getUserDetails() {
+        return userDetails;
+    }
+
+    public void setUserDetails(UserEntity userDetails) {
+        this.userDetails = userDetails;
     }
 }

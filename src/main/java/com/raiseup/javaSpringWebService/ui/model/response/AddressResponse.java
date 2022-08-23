@@ -2,19 +2,19 @@ package com.raiseup.javaSpringWebService.ui.model.response;
 
 public class AddressResponse {
 
-    private String address_id;
+    private String addressId;
     private String country;
     private String city;
     private String streetName;
     private String postalCode;
     private String type;
 
-    public String getAddress_id() {
-        return address_id;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddress_id(String address_id) {
-        this.address_id = address_id;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public String getCountry() {

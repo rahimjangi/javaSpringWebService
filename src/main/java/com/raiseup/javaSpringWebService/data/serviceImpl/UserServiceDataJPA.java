@@ -62,7 +62,7 @@ public class UserServiceDataJPA implements UserService {
        for(int i=0;i<userEntity.getAddresses().size();i++){
            AddressEntity addressEntity = userEntity.getAddresses().get(i);
            addressEntity.setUserDetails(userEntity);
-           addressEntity.setAddress_id(helper.generateAddressId(30));
+           addressEntity.setAddressId(helper.generateAddressId(30));
            userEntity.getAddresses().set(i,addressEntity);
         }
         UserEntity savedUserEntity = userRepository.save(userEntity);

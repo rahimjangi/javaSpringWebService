@@ -44,4 +44,20 @@ public class AddressServiceDataJpa  implements AddressService {
 
         return addressDtos;
     }
+
+    @Override
+    public AddressDto getAddress(String userId, String addressId) {
+        ModelMapper modelMapper= new ModelMapper();
+        AddressDto addressDto= new AddressDto();
+        Optional<UserEntity> userEntity = userRepository.findByUserId(userId);
+        if(userEntity.isEmpty()) throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        Iterable<AddressEntity> addresses = addressRepository.findAllByUserDetails(userEntity.get());
+        addresses.forEach(item -> {
+            if (item.getAddressId().equals(addressId)){
+                modelMapper.map(item,addressDto);
+                return;
+            }
+        });
+        return addressDto;
+    }
 }

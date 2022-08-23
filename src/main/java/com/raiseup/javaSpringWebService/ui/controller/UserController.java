@@ -76,4 +76,12 @@ public class UserController {
         });
         return new ResponseEntity<>(responses,HttpStatus.OK);
     }
+    @GetMapping("{userId}/addresses/{addressId}")
+    public ResponseEntity<AddressResponse>getAddress(@PathVariable("userId")String userId,@PathVariable("addressId")String addressId){
+        AddressResponse addressResponse= new AddressResponse();
+        ModelMapper modelMapper= new ModelMapper();
+        AddressDto addressDto=addressService.getAddress(userId,addressId);
+        modelMapper.map(addressDto,addressResponse);
+        return new ResponseEntity<>(addressResponse,HttpStatus.OK);
+    }
 }

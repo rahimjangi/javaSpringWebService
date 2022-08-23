@@ -2,7 +2,7 @@ package com.raiseup.javaSpringWebService.data.dto;
 
 public class AddressDto {
     private Long id;
-    private String address_id;
+    private String addressId;
     private String country;
     private String city;
     private String streetName;
@@ -18,12 +18,12 @@ public class AddressDto {
         this.id = id;
     }
 
-    public String getAddress_id() {
-        return address_id;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddress_id(String address_id) {
-        this.address_id = address_id;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public String getCountry() {
