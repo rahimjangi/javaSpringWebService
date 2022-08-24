@@ -1,6 +1,8 @@
 package com.raiseup.javaSpringWebService.ui.model.response;
 
-public class AddressResponse {
+import org.springframework.hateoas.RepresentationModel;
+
+public class AddressResponse extends RepresentationModel<AddressResponse> {
 
     private String addressId;
     private String country;
